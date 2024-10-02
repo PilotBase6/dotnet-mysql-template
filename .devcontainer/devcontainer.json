@@ -1,0 +1,24 @@
+{
+	"name": "Dotnet MySQL Template",
+	"dockerComposeFile": "docker-compose.yaml",
+	"service": "template-service-dev",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-dotnettools.csharp",
+				"GitHub.copilot-chat",
+				"GitHub.copilot",
+				"ms-azuretools.vscode-docker",
+				"kreativ-software.csharpextensions",
+				"ms-dotnettools.vscodeintellicode-csharp",
+				"ms-dotnettools.csdevkit"
+			]
+		}
+	},
+	"features": {
+        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+    },
+	"postCreateCommand": "dotnet tool restore && dotnet restore"
+}

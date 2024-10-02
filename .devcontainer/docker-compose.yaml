@@ -1,0 +1,62 @@
+
+services:
+  template-service-dev:
+    container_name: template-service-dev
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ../..:/workspaces:cached
+    command: sleep infinity
+    environment:
+      TEMPLATE_CONECTION_STRING: "Host=template-mysql;Database=testdb;Username=testemplate;Password=testemplate;"
+      JWT_SECRET_KEY: "6a449699-8c17-4f9b-afb7-7aa9ef475792"
+      JWT_ISSUER: "test-user-jwt"
+      JWT_AUDIENCE: "http://localhost:5129/"
+    ports:
+      - "5129:5129"
+    networks:
+      - dev-template
+
+  template-backend-service:
+    container_name: template-backend-service
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile.app
+    volumes:
+      - ../..:/workspaces:cached
+    command: sleep infinity
+    depends_on:
+      - template-mysql
+      - template-service-dev
+    networks:
+      - dev-template
+    environment:
+      ASPNETCORE_URLS: "http://*:8080"
+      TEMPLATE_CONECTION_STRING: "Host=template-mysql;Database=testdb;Username=testemplate;Password=testemplate;"
+      JWT_SECRET_KEY: "6a449699-8c17-4f9b-afb7-7aa9ef475792"
+      JWT_ISSUER: "test-user-jwt"
+      JWT_AUDIENCE: "http://localhost:5129/"
+
+  template-mysql:
+    container_name: template-mysql
+    image: mysql:8.0
+    restart: unless-stopped
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: testemplate
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: testemplate
+      MYSQL_PASSWORD: testemplate
+    ports:
+      - "8080:8080"
+    networks:
+      - dev-template
+
+volumes:
+  db_data:
+
+networks:
+  dev-template:
+    name: dev-template
