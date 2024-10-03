@@ -1,4 +1,31 @@
-        ## Descripción
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API
+    participant MySQL
+
+    Client->>API: Send login request (credentials)
+    API->>MySQL: Check user credentials
+    API -->> Client: User not found, create account
+    
+    API->>MySQL: Check user credentials
+    MySQL-->>API: Return user details
+    API-->>Client: Generate and return JWT
+    
+    Client->>Client: Set JWT (Swagger docs)
+    
+    Client->>API: Send request with JWT (Authorization header)
+    API->>API: Verify JWT
+    API-->>Client: If invalid, return error (401 Unauthorized)
+    
+    API->>MySQL: Request data from MySQL
+    MySQL-->>API: Return data
+    
+    API-->>Client: Return requested data
+```
+
+
+## Descripción
 Prueba técnica para Treda Solutions donde se crea una aplicación CRUD utilizando .Net 8, MySQL y ASP .NET MVC. 
 
 El proyecto está diseñado para gestionar usuarios. Contiene dos vistas principales:
