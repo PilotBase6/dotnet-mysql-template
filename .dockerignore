@@ -1,0 +1,12 @@
+.devcontainer/
+.github/
+.vscode/
+.mono/
+bin/
+obj/
+out/
+packages/
+Dockerfile*
+*.pdb
+*.dll
+TestResults/
