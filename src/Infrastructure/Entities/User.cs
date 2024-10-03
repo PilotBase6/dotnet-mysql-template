@@ -1,5 +1,6 @@
 using Infrastructure.Core;
-using BCrypt.Net;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Infrastructure.Entities
 {
@@ -8,7 +9,7 @@ namespace Infrastructure.Entities
         public Guid UserId { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
-        public string Password { get; set; }
+        public string Password { get; private set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
@@ -17,7 +18,7 @@ namespace Infrastructure.Entities
             UserId = Guid.NewGuid();
             Name = ValidateName(name);
             Email = ValidateEmail(email);
-            Password = HashPassword(password);
+            SetPassword(password);
             CreatedAt = DateTime.Now;
             UpdatedAt = DateTime.MinValue;
         }
@@ -89,14 +90,29 @@ namespace Infrastructure.Entities
             return password;
         }
 
-        public static string HashPassword(string password)
+        public void SetPassword(string password)
         {
-            return BCrypt.Net.BCrypt.HashPassword(password);
+            Password = HashPassword(password);
+            UpdatedAt = DateTime.Now;
+        }
+
+        private static string HashPassword(string password)
+        {
+            var saltGuid = "1234567890qwertyuiopasdfghjklzxcvbnm";
+            using (var sha256 = SHA256.Create())
+            {
+                var saltedPassword = string.Concat(password, saltGuid);
+                var saltedPasswordBytes = Encoding.UTF8.GetBytes(saltedPassword);
+                var hashBytes = sha256.ComputeHash(saltedPasswordBytes);
+                return Convert.ToBase64String(hashBytes);
+            }
         }
 
         public bool VerifyPassword(string password)
         {
-            return BCrypt.Net.BCrypt.Verify(password, this.Password);
+            var hash = HashPassword(password);
+            var reHash = HashPassword(hash);
+            return reHash == Password;
         }
     }
 }

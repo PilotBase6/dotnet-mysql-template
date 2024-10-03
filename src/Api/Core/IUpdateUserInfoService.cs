@@ -16,7 +16,7 @@ namespace Api.Core
     }
     public interface IUpdateUserInfoServiceRow
     {
-        string Message { get; set; }   
+        string? Message { get; set; }   
     }
 
 }

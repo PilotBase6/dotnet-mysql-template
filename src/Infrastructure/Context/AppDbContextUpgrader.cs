@@ -1,15 +1,17 @@
 using Microsoft.EntityFrameworkCore;
+
 namespace Infrastructure.Context{
     public partial class AppDbContextUpgrader : AppDbContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder
                     .UseMySql(
-                        "server=db;database=asterisk",
-                        Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.5.19-mariadb"));
+                        "Server=dotnet-test-mysql;Port=3306;Database=testdb;User Id=testdotnet;Password=testdotnet;Allow User Variables=true;Default Command Timeout=0;",
+                        Microsoft.EntityFrameworkCore.ServerVersion.AutoDetect("Server=dotnet-test-mysql;Port=3306;Database=testdb;User Id=testdotnet;Password=testdotnet;Allow User Variables=true;Default Command Timeout=0;"));
             }
         }
     }

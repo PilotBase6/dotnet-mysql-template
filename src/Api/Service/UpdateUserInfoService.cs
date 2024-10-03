@@ -1,48 +1,53 @@
+using Infrastructure.Entities;
 using Infrastructure.Repositories;
 using Api.Core;
-using Infrastructure.Entities;
 
 namespace Api.Service
 {
-    public class LoginService : ILoginService
+    public class UpdateUserInfoService : IUpdateUserInfoService
     {
         private readonly UserRepository UserRepository;
-        public LoginService(UserRepository UserRepository)
+        public UpdateUserInfoService(UserRepository UserRepository)
         {
             this.UserRepository = UserRepository;
         }
-        public async ValueTask<ILoginServiceResponse> ExecuteAsync(ILoginServiceRequest request)
+        public async ValueTask<IUpdateUserInfoServiceResponse> ExecuteAsync(IUpdateUserInfoServiceRequest request)
         {
             var validations = await ValidateAsync(request);
             if (validations.Any())
             {
-                return new LoginServiceResponse
+                return new UpdateUserInfoServiceResponse
                 {
                     Success = false,
                     Errors = validations
                 };
             }
 
-            var user = await UserRepository.GetByEmailAsync(request.Email);
+            var userExist = await UserRepository.GetByEmailAsync(request.Email);
 
-            return new LoginServiceResponse
+            userExist.Name = request.Name;
+            userExist.Email = request.Email;
+            userExist.SetPassword(request.Password);
+            userExist.UpdatedAt = DateTime.Now;
+
+            await UserRepository.Update(userExist);
+
+            return new UpdateUserInfoServiceResponse
             {
                 Success = true,
-                Message = "User created successfully"
+                Message = "User updated successfully"
             };
         }
-        public async ValueTask<IEnumerable<string>> ValidateAsync(ILoginServiceRequest request)
+        public async ValueTask<IEnumerable<string>> ValidateAsync(IUpdateUserInfoServiceRequest request)
         {
             var errors = new List<string>();
             var user = await UserRepository.GetByEmailAsync(request.Email);
-            if (user == null)
+
+            if (string.IsNullOrEmpty(request.Name))
             {
-                errors.Add("User not found");
+                errors.Add("Name is required");
             }
-            if (user != null && !user.VerifyPassword(request.Password))
-            {
-                errors.Add("Invalid password");
-            }
+
             if (string.IsNullOrEmpty(request.Email))
             {
                 errors.Add("Email is required");
@@ -51,6 +56,18 @@ namespace Api.Service
             {
                 errors.Add("Password is required");
             }
+            if (user == null)
+            {
+                errors.Add("User does not exist");
+            }
+            try
+            {
+                User.ValidateName(request.Name);
+            }
+            catch (ArgumentException e)
+            {
+                errors.Add(e.Message);
+            }
             try
             {
                 User.ValidateEmail(request.Email);
@@ -61,32 +78,34 @@ namespace Api.Service
             }
             try
             {
-                User.ValidateEmail(request.Email);
+                User.ValidatePassword(request.Password);
+            }
+            catch (ArgumentException e)
+            {
+                errors.Add(e.Message);
+            }
 
-            }
-            catch (ArgumentException e)
-            {
-                errors.Add(e.Message);
-            }
+
 
             return errors;
         }
     }
-    public class LoginServiceRequest : ILoginServiceRequest
+    public class UpdateUserInfoServiceRequest : IUpdateUserInfoServiceRequest
     {
+        public required string Name { get; set; }
         public required string Email { get; set; }
         public required string Password { get; set; }
     }
 
-    public class LoginServiceResponse : ILoginServiceResponse
+    public class UpdateUserInfoServiceResponse : IUpdateUserInfoServiceResponse
     {
         public string? Message { get; set; }
         public bool Success { get; set; }
         public IEnumerable<string>? Errors { get; set; }
 
-        public ILoginServiceRow? Data { get; set; }
+        public IUpdateUserInfoServiceRow? Data { get; set; }
     }
-    public class LoginServiceRow : ILoginServiceRow
+    public class UpdateUserInfoServiceRow : IUpdateUserInfoServiceRow
     {
         public string? Message { get; set; }
     }

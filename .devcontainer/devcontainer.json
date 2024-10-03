@@ -1,7 +1,7 @@
 {
 	"name": "Dotnet MySQL Template",
 	"dockerComposeFile": "docker-compose.yaml",
-	"service": "template-service-dev",
+	"service": "dotnet-test-service-dev",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
 	"customizations": {
@@ -20,5 +20,5 @@
 	"features": {
         "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
     },
-	"postCreateCommand": "dotnet tool restore && dotnet restore"
+	"postCreateCommand": "dotnet tool restore && dotnet restore && dotnet tool install --global dotnet-ef"
 }

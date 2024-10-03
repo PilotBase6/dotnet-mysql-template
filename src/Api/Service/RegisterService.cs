@@ -67,9 +67,9 @@ namespace Api.Service
     }
     public class RegisterServiceRequest : IRegisterServiceRequest
     {
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public required string Name { get; set; }
+        public required string Email { get; set; }
+        public required string Password { get; set; }
     }
 
     public class RegisterServiceResponse : IRegisterServiceResponse
@@ -78,7 +78,7 @@ namespace Api.Service
         public bool Success { get; set; }
         public IEnumerable<string>? Errors { get; set; }
 
-        public IRegisterServiceRow Data { get; set; }
+        public IRegisterServiceRow? Data { get; set; }
     }
     public class RegisterServiceRow : IRegisterServiceRow
     {

@@ -15,8 +15,10 @@ namespace Infrastructure
         {
             services.AddDbContext<AppDbContext>(options =>
             {
-                var connectionString = configuration["TEMPLATE_CONNECTION_STRING"]
+                var connectionString = configuration["MYSQL_CONNECTION_STRING"]
                     ?? throw new ArgumentNullException("AppDbContext connection string is required");
+
+                System.Console.WriteLine($"Connection string: {connectionString}");
 
                 options
                     .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))

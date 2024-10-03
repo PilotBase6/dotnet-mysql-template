@@ -16,7 +16,7 @@ public class Program
         var services = builder.Services;
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
-        
+
         var keyString = configuration.GetValue<string>("JWT_SECRET_KEY") ?? throw new ArgumentNullException("JWT_SECRET_KEY is required");
         var issuer = configuration.GetValue<string>("JWT_ISSUER");
         var audience = configuration.GetValue<string>("JWT_AUDIENCE");
@@ -74,40 +74,45 @@ public class Program
             options.IncludeErrorDetails = true;
         });
 
-        // builder.Services.AddCors(options =>
-        // {
-        //     options.AddPolicy("AllowTemplate", policy =>
-        //     {
-        //         policy.WithOrigins("*")
-        //               .AllowAnyHeader()
-        //               .AllowAnyMethod();
-        //     });
-        // });
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowTemplate", policy =>
+            {
+                policy.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+            });
+        });
 
         InfrastructureModule.ConfigureServices(services, configuration);
+
+        System.Console.WriteLine("Connection string: " + configuration["MYSQL_CONNECTION_STRING"]);
 
         services.AddScoped<JwtService>();
         services.AddScoped<IRegisterService, RegisterService>();
         services.AddScoped<ILoginService, LoginService>();
+        services.AddScoped<IGetAllUserService, GetAllUserService>();
+        services.AddScoped<IUpdateUserInfoService, UpdateUserInfoService>();
+        services.AddScoped<IDeleteUserService, DeleteUserService>();
 
         builder.Services.AddHealthChecks();
 
         var app = builder.Build();
 
+        app.UseCors("AllowTemplate");
         app.UsePathBase("/api");
 
 
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {
-            c.SwaggerEndpoint($"/api/swagger/v1/swagger.json", "Money Control Api");
+            c.SwaggerEndpoint($"/api/swagger/v1/swagger.json", "Template Api");
         });
 
 
         app.UseRouting();
 
-        // app.UseCors("AllowTemplate");
-        
+
         app.UseAuthentication();
         app.UseAuthorization();
 

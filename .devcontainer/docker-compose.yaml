@@ -1,7 +1,7 @@
 
 services:
-  template-service-dev:
-    container_name: template-service-dev
+  dotnet-test-service-dev:
+    container_name: dotnet-test-service-dev
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -9,17 +9,18 @@ services:
       - ../..:/workspaces:cached
     command: sleep infinity
     environment:
-      TEMPLATE_CONECTION_STRING: "Host=template-mysql;Database=testdb;Username=testemplate;Password=testemplate;"
+      ASPNETCORE_URLS: "http://*:5000"
+      MYSQL_CONNECTION_STRING: "Server=dotnet-test-mysql;Port=3306;Database=testdb;User Id=testdotnet;Password=testdotnet;Allow User Variables=true;Default Command Timeout=0;"
       JWT_SECRET_KEY: "6a449699-8c17-4f9b-afb7-7aa9ef475792"
       JWT_ISSUER: "test-user-jwt"
-      JWT_AUDIENCE: "http://localhost:5129/"
+      JWT_AUDIENCE: "http://localhost:5000/"
     ports:
-      - "5129:5129"
+      - "5000:5000"
     networks:
-      - dev-template
+      - dev-dotnet-test
 
-  template-backend-service:
-    container_name: template-backend-service
+  dotnet-test-backend-service:
+    container_name: dotnet-test-backend-service
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile.app
@@ -27,36 +28,52 @@ services:
       - ../..:/workspaces:cached
     command: sleep infinity
     depends_on:
-      - template-mysql
-      - template-service-dev
+      - dotnet-test-mysql
+      - dotnet-test-service-dev
     networks:
-      - dev-template
+      - dev-dotnet-test
+    ports:
+      - "8080:8080"
     environment:
       ASPNETCORE_URLS: "http://*:8080"
-      TEMPLATE_CONECTION_STRING: "Host=template-mysql;Database=testdb;Username=testemplate;Password=testemplate;"
+      MYSQL_CONNECTION_STRING: "Server=dotnet-test-mysql;Port=3306;Database=testdb;User Id=testdotnet;Password=testdotnet;Allow User Variables=true;Default Command Timeout=0;"
       JWT_SECRET_KEY: "6a449699-8c17-4f9b-afb7-7aa9ef475792"
       JWT_ISSUER: "test-user-jwt"
-      JWT_AUDIENCE: "http://localhost:5129/"
+      JWT_AUDIENCE: "http://localhost:5000/"
 
-  template-mysql:
-    container_name: template-mysql
+  dotnet-test-mysql:
+    container_name: dotnet-test-mysql
     image: mysql:8.0
     restart: unless-stopped
     volumes:
       - db_data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: testemplate
+      MYSQL_ROOT_PASSWORD: testdotnet
       MYSQL_DATABASE: testdb
-      MYSQL_USER: testemplate
-      MYSQL_PASSWORD: testemplate
+      MYSQL_USER: testdotnet
+      MYSQL_PASSWORD: testdotnet
     ports:
-      - "8080:8080"
+      - "33060:3306"
     networks:
-      - dev-template
+      - dev-dotnet-test
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: dotnet-test-mysql
+      MYSQL_ROOT_PASSWORD: testdotnet
+    ports:
+      - "8081:80"
+    depends_on:
+      - dotnet-test-mysql
+    networks:
+      - dev-dotnet-test
 
 volumes:
   db_data:
 
 networks:
-  dev-template:
-    name: dev-template
+  dev-dotnet-test:
+    name: dev-dotnet-test
