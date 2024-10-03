@@ -8,8 +8,6 @@
 		"vscode": {
 			"extensions": [
 				"ms-dotnettools.csharp",
-				"GitHub.copilot-chat",
-				"GitHub.copilot",
 				"ms-azuretools.vscode-docker",
 				"kreativ-software.csharpextensions",
 				"ms-dotnettools.vscodeintellicode-csharp",
