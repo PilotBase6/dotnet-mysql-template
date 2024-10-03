@@ -37,20 +37,26 @@ El proyecto está diseñado para gestionar usuarios. Contiene dos vistas princip
 
 ## DockerHub Container Registry
 
-    ```bash
-    docker pull pilotbase6/dotnet-mysql-test
-    ```
+    
+```bash
+docker pull pilotbase6/dotnet-mysql-test
+```
 
 Recordatorio: Si quieres ejecutar la imagen del proyecto recuerda tener un servicio de MySQL corriendo en el mismo Network (Cambiar el nombre del servicio MySQL en el MYSQL_CONNECTION_STRING).
 
-    ```bash
-    docker run -it \
-    --network dev-dotnet-test \
-    -p 5500:5500 \
-    -e ASPNETCORE_URLS="http://*:5500" \
-    -e MYSQL_CONNECTION_STRING="Server=dotnet-test-mysql;Port=3306;Database=testdb;User Id=testdotnet;Password=testdotnet;Allow User Variables=true;Default Command Timeout=0;" \
-    -e JWT_SECRET_KEY="6a449699-8c17-4f9b-afb7-7aa9ef475792" \
-    -e JWT_ISSUER="test-user-jwt" \
-    -e JWT_AUDIENCE="http://localhost:5500/" \
-    pilotbase6/dotnet-mysql-test:latest
-    ```
+```bash
+docker run -it \
+--network dev-dotnet-test \
+-p 5500:5500 \
+-e ASPNETCORE_URLS="http://*:5500" \
+-e MYSQL_CONNECTION_STRING="Server=dotnet-test-mysql;Port=3306;Database=testdb;User Id=testdotnet;Password=testdotnet;Allow User Variables=true;Default Command Timeout=0;" \
+-e JWT_SECRET_KEY="6a449699-8c17-4f9b-afb7-7aa9ef475792" \
+-e JWT_ISSUER="test-user-jwt" \
+-e JWT_AUDIENCE="http://localhost:5500/" \
+pilotbase6/dotnet-mysql-test:latest
+```
+
+En la aplicación hay dos archivos que son importantes para mi solución:
+IRepository.cs: Contiene una clase abstracta que contiene los métodos CRUD reutilizables, al tener un tipado generico permite que cualquier módelo lo utilice facilitando la creación de nuevos servicios y manteniendo una consistencia.
+
+IService.cs Contiene un conjunto de interfaces que mantienen una consistencia de la manera en que se deben desarrollar los diferentes servicios, esto ayuda a mantener un orden tanto en el desarrollo del código como en las respuestas de las APIs.
