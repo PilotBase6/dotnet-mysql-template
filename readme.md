@@ -1,4 +1,4 @@
-## Descripción
+        ## Descripción
 Prueba técnica para Treda Solutions donde se crea una aplicación CRUD utilizando .Net 8, MySQL y ASP .NET MVC. 
 
 El proyecto está diseñado para gestionar usuarios. Contiene dos vistas principales:
@@ -58,6 +58,6 @@ pilotbase6/dotnet-mysql-test:latest
 
 En la aplicación hay dos archivos que son importantes para mi solución:
 
-IRepository.cs: Contiene una clase abstracta que contiene los métodos CRUD reutilizables, al tener un tipado generico permite que cualquier módelo lo utilice facilitando la creación de nuevos servicios y manteniendo una consistencia.
+Repository.cs: Contiene una clase abstracta que contiene los métodos CRUD reutilizables, al tener un tipado generico permite que cualquier módelo lo utilice facilitando la creación de nuevos servicios y manteniendo una consistencia.
 
 IService.cs Contiene un conjunto de interfaces que mantienen una consistencia de la manera en que se deben desarrollar los diferentes servicios, esto ayuda a mantener un orden tanto en el desarrollo del código como en las respuestas de las APIs.
